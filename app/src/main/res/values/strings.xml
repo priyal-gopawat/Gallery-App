@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Gallery</string>
+    <string name="loading_image">Loading image</string>
+    <string name="image_loaded">This is a random image</string>
+    <string name="image_load_failed">Image load failed : $1%s</string>
+    <string name="refresh">Refresh</string>
+    <string name="add_image">Add Image</string>
+    <string name="enter_image_dimensions">Enter image dimensions</string>
+    <string name="width">Width</string>
+    <string name="height">Height</string>
+    <string name="fetch_image">FETCH IMAGE</string>
+    <string name="fetching_random_image">Fetching random image...</string>
+    <string name="choose_a_palette_color">Choose a palette color</string>
+    <string name="choose_a_label">Choose a label</string>
+    <string name="add">ADD</string>
+    <string name="label">Label</string>
+
+
+</resources>
