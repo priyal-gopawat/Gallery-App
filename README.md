@@ -12,6 +12,7 @@
   
 
 ### Application Previews :
-(https://github.com/priyal-gopawat/Storage/blob/main/Gallery%20App/GalleryApp.mp4)
 
-Download apk from [here]()
+ Checkout application video from [here](https://github.com/priyal-gopawat/Storage/blob/main/Gallery%20App/GalleryApp.mp4)
+
+Download apk from [here](https://github.com/priyal-gopawat/Gallery-App/releases/download/1.0/app-debug.apk)
