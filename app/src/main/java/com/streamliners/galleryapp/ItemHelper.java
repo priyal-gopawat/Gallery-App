@@ -36,6 +36,7 @@ public class ItemHelper {
     private Context context;
     private  Bitmap bitmap;
     private Set<Integer> colors;
+    String redirectUrl;
 
 
     //Triggers -----------------------------------------------------------------------------
@@ -44,7 +45,7 @@ public class ItemHelper {
     void fetchData(int x, int y , Context context, OnCompleteListener listener){
         this.context = context;
         this.listener = listener;
-        fetchImage(
+        getRedirectUrl(
                 String.format(rectangularImageURL,x,y)
         );
     }
@@ -53,10 +54,25 @@ public class ItemHelper {
     void fetchData(int x, Context context,OnCompleteListener listener){
         this.context = context;
         this.listener = listener;
-        fetchImage(
+       getRedirectUrl(
                 String.format(squareImageURL,x)
         );
     }
+
+    /**
+     * fetches redirected URL
+     * @param url
+     */
+    void getRedirectUrl(String url){
+        new RedirectUrlHelper(new RedirectUrlHelper.OnUrlFetched() {
+            @Override
+            public void getUrl(String URL) {
+                redirectUrl = URL;
+                fetchImage(redirectUrl);
+            }
+        }).execute(url);
+    }
+
 
    //ImageFetcher -----------------------------------------------------------------------------
 
@@ -143,20 +159,20 @@ public class ItemHelper {
                        for(ImageLabel label: labels){
                            strings.add(label.getText());
                        }
-                       listener.onFetched(bitmap, colors , strings);
+                       listener.onFetched(redirectUrl, colors , strings);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                     listener.onError(e.toString());
+                        listener.onError(e.toString());
                     }
                 });
     }
 
     //Listener -----------------------------------------------------------------------------
     interface OnCompleteListener{
-        void onFetched(Bitmap image, Set<Integer> colors, List<String> labels);
+        void onFetched(String url, Set<Integer> colors, List<String> labels);
         void onError(String error);
     }
 }

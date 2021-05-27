@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.streamliners.galleryapp.databinding.ChipColorBinding;
@@ -31,8 +32,8 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
     private DialogAddImageBinding b;
     private LayoutInflater inflater;
     private boolean isCustomLabel;
-    private Bitmap image;
     private AlertDialog dialog;
+    String redirectUrl;
 
     /**
      * showing dialogBox
@@ -154,13 +155,17 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
 
     /**
      * show and inflate data
-     * @param image
+     * @param url
      * @param colors
      * @param labels
      */
-    private void showData(Bitmap image, Set<Integer> colors, List<String> labels) {
-        this.image = image;
-        b.imageView.setImageBitmap(image);
+    private void showData(String url, Set<Integer> colors, List<String> labels) {
+        this.redirectUrl = url;
+        //loads image from glide cache
+        Glide.with(context)
+                .asBitmap()
+                .load(redirectUrl)
+                .into(b.imageView);
         inflateColorChips(colors);
         inflateLabelChips(labels);
         handleCustomLabelInput();
@@ -180,7 +185,7 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
             public void onClick(View v) {
                 int colorChipId = b.colorChips.getCheckedChipId(), labelChipId = b.labelChips.getCheckedChipId();
 
-                //Guard code
+                //Guard code(if one of them is not checked = -1)
                 if (colorChipId == -1 || labelChipId == -1) {
                     Toast.makeText(context, "Please choose color & label", Toast.LENGTH_SHORT).show();
                     return;
@@ -202,7 +207,7 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
                         .getChipBackgroundColor().getDefaultColor();
 
                 //Send callback
-                listener.onImageAdded(new Item(image, color, label));
+                listener.onImageAdded(new Item(redirectUrl, color, label));
                 dialog.dismiss();
             }
         });
@@ -219,6 +224,7 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
         binding.getRoot().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // if isChecked is true then visible else gone
                 b.customLabelInput.setVisibility(isChecked ? View.VISIBLE : View.GONE);
                 isCustomLabel = isChecked;
             }
@@ -254,9 +260,9 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
 
     //Item helper callbacks
     @Override
-    public void onFetched(Bitmap image, Set<Integer> colors, List<String> labels) {
+    public void onFetched(String url, Set<Integer> colors, List<String> labels) {
 
-        showData(image, colors, labels);
+        showData(url, colors, labels);
 
     }
 

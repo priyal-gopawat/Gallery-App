@@ -4,13 +4,13 @@ import android.graphics.Bitmap;
 
 public class Item {
 
-    public Bitmap image;
+    public String url;
     public int color;
     public String label;
 
 
-    public Item(Bitmap image, int color, String label) {
-        this.image = image;
+    public Item(String url, int color, String label) {
+        this.url = url;
         this.color = color;
         this.label = label;
     }
