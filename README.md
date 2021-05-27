@@ -9,6 +9,10 @@
 - Adding image random image from internet from height and width input
   
 - Fetching labels and colors from image using Google ml kit
+
+- Saved data in shared preferences
+
+- use async task to get redirected Url
   
 
 ### Application Previews :
