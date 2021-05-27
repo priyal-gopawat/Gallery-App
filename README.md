@@ -15,6 +15,6 @@
 
  Checkout application video from [here](https://drive.google.com/file/d/1P5wSOTbp9MeyWcrbXR7TRnx77IPo4SOh/view?usp=sharing)
  
- [](https://github.com/priyal-gopawat/Storage/blob/main/Gallery%20App/gallery.jpeg)
+ [1.](https://github.com/priyal-gopawat/Storage/blob/main/Gallery%20App/gallery.jpeg)
 
 Download apk from [here](https://github.com/priyal-gopawat/Gallery-App/releases/download/1.0/app-debug.apk)
