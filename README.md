@@ -1,5 +1,3 @@
- Gallery-App
- 
  Gallery App
 
 Features Of Application :
