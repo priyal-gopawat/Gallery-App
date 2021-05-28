@@ -170,9 +170,10 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
             listener.onError("Cast Exception");
             return;
         }
+        dialog = new MaterialAlertDialogBuilder(context, R.style.CustomDialogTheme)
+                .setView(b.getRoot())
+                .show();
         new ItemHelper().fetchData(url,context,this);
-
-
 
     }
 
@@ -188,9 +189,6 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
         this.redirectUrl = url;
 
         if(flag==1){
-            dialog = new MaterialAlertDialogBuilder(context, R.style.CustomDialogTheme)
-                    .setView(b.getRoot())
-                    .show();
             b.inputDimensionsRoot.setVisibility(View.GONE);
 
         }
