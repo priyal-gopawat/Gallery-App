@@ -1,8 +1,8 @@
-# Gallery-App
+ Gallery-App
+ 
+ Gallery App
 
-### Gallery App
-
-### Features Of Application :
+Features Of Application :
 
 - Simple gallery app to preview image cards
   
@@ -18,7 +18,7 @@
 
 - share image card 
 
-### Application Previews :
+Application Previews :
 
  Checkout application video from [here](https://drive.google.com/file/d/1P5wSOTbp9MeyWcrbXR7TRnx77IPo4SOh/view?usp=sharing)
  
