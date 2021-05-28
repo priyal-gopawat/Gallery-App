@@ -14,6 +14,9 @@
 
 - use async task to get redirected Url
   
+- add image from gallery
+
+- share image card 
 
 ### Application Previews :
 
