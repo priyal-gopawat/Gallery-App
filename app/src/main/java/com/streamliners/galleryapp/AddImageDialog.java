@@ -34,6 +34,7 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
     private boolean isCustomLabel;
     private AlertDialog dialog;
     String redirectUrl;
+    int flag = 0;
 
     /**
      * showing dialogBox
@@ -151,6 +152,30 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
                 .fetchData(x, context, this);
     }
 
+    /**
+     * fetch data for image from gallery
+     * @param url
+     * @param context
+     * @param listener
+     */
+    void fetchDataForGallery(String url,Context context,OnCompleteListener listener){
+        this.listener = listener;
+        this.context = context;
+        flag=1;
+        if (context instanceof GalleryActivity) {
+            inflater = ((GalleryActivity) context).getLayoutInflater();
+            b = DialogAddImageBinding.inflate(inflater);
+        } else {
+            dialog.dismiss();
+            listener.onError("Cast Exception");
+            return;
+        }
+        new ItemHelper().fetchData(url,context,this);
+
+
+
+    }
+
     //Step 3 : show data
 
     /**
@@ -161,6 +186,14 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
      */
     private void showData(String url, Set<Integer> colors, List<String> labels) {
         this.redirectUrl = url;
+
+        if(flag==1){
+            dialog = new MaterialAlertDialogBuilder(context, R.style.CustomDialogTheme)
+                    .setView(b.getRoot())
+                    .show();
+            b.inputDimensionsRoot.setVisibility(View.GONE);
+
+        }
         //loads image from glide cache
         Glide.with(context)
                 .asBitmap()
@@ -174,6 +207,7 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
         b.progressIndicatorRoot.setVisibility(View.GONE);
         b.mainRoot.setVisibility(View.VISIBLE);
         b.customLabelInput.setVisibility(View.GONE);
+
     }
 
     /**
@@ -220,6 +254,7 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
         ChipLabelBinding binding = ChipLabelBinding.inflate(inflater);
         binding.getRoot().setText("Custom");
         b.labelChips.addView(binding.getRoot());
+        b.customLabelInput.setVisibility(View.GONE);
 
         binding.getRoot().setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
