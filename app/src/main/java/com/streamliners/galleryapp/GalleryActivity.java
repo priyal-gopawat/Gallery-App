@@ -43,7 +43,7 @@ public class GalleryActivity extends AppCompatActivity {
     ActivityGalleryBinding b;
     SharedPreferences sharedPrefs;
     List<Item> itemList = new ArrayList<>();
-   ItemCardBinding binding;
+    ItemCardBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +154,8 @@ public class GalleryActivity extends AppCompatActivity {
                 .asBitmap()
                 .load(item.url)
                 .into(binding.imageView);
+        b.noItems.setVisibility(View.GONE);
+
         binding.title.setText(item.label);
         binding.title.setBackgroundColor(item.color);
 

@@ -16,6 +16,14 @@
         android:padding="8dp"
         tools:context=".GalleryActivity">
 
+        <TextView
+            android:id="@+id/noItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_marginTop="264dp"
+            style="@style/TextAppearance.MaterialComponents.Headline6"
+            android:text="No items. Try adding from the action above!"/>
 
 
     </LinearLayout>
