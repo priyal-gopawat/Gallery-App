@@ -3,12 +3,20 @@ package com.streamliners.galleryapp;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -18,15 +26,18 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Html;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.streamliners.galleryapp.databinding.ActivityGalleryBinding;
 import com.streamliners.galleryapp.databinding.ChipColorBinding;
 import com.streamliners.galleryapp.databinding.ChipLabelBinding;
@@ -35,6 +46,7 @@ import com.streamliners.galleryapp.databinding.ItemCardBinding;
 import com.streamliners.galleryapp.models.Item;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -44,6 +56,15 @@ public class GalleryActivity extends AppCompatActivity {
     SharedPreferences sharedPrefs;
     List<Item> itemList = new ArrayList<>();
     ItemCardBinding binding;
+    Context context = this;
+    ItemAdapter adapter;
+    ItemTouchHelper.SimpleCallback dragCallback;
+    ItemTouchHelper itemTouchHelper2;
+    int MODE_ENABLE =1;
+    int MODE_DISABLE=0;
+    int MODE = 0;
+    static final Integer WRITE_EXST = 0x3;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +73,83 @@ public class GalleryActivity extends AppCompatActivity {
         b = ActivityGalleryBinding.inflate(getLayoutInflater());
         setContentView(b.getRoot());
 
+        getSupportActionBar().setTitle((Html.fromHtml("<font color=\"#FFFFFF\">" + getString(R.string.app_name) + "</font>")));
+
         sharedPrefs = getPreferences(MODE_PRIVATE);
         getDataFromSharedPreference();
+
+        floatingActionButton();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
+            if (requestCode == 3 || requestCode == 4) {
+                shareImage();
+            }
+        }
+        else Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show();
+    }
+
+    private void askForPermission(String permission, Integer requestCode) {
+        if (ContextCompat.checkSelfPermission(GalleryActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            ActivityCompat.requestPermissions(GalleryActivity.this, new String[]{permission}, requestCode);
+        } else {
+            shareImage();
+        }
+    }
+
+    private void floatingActionButton() {
+        b.floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            if(MODE==MODE_ENABLE){
+                MODE=MODE_DISABLE;
+                adapter.mode = MODE_DISABLE;
+                b.floatingActionButton.setImageResource(R.drawable.ic_vertical2);
+                List<ItemAdapter.CardViewHolder> holders = adapter.holders;
+
+                for(int i=0;i<holders.size();i++){
+
+                    holders.get(i).listenerSetter();
+                }
+
+                itemTouchHelper2.attachToRecyclerView(null);
+            }
+            else {
+                MODE=MODE_ENABLE;
+                adapter.mode = MODE_ENABLE;
+                b.floatingActionButton.setImageResource(R.drawable.ic_drag_drop);
+                List<ItemAdapter.CardViewHolder> holders = adapter.holders;
+
+                for(int i=0;i<holders.size();i++){
+
+                    holders.get(i).listenerSetter();
+                }
+                itemTouchHelper2.attachToRecyclerView(b.list);
+            }
+
+            }
+        });
+
+    }
+
+    private void setUpRecyclerView() {
+
+        adapter = new ItemAdapter(this, itemList);
+
+
+        b.list.setLayoutManager(new LinearLayoutManager(this));
+
+        itemTouchHelperCallback();
+
+        b.list.setAdapter(adapter);
+
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 
     }
 
@@ -62,6 +158,23 @@ public class GalleryActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.gallery, menu);
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.filter(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.filter(newText);
+                return true;
+            }
+        });
+
         return true;
     }
 
@@ -73,9 +186,13 @@ public class GalleryActivity extends AppCompatActivity {
         } else if (item.getItemId() == R.id.addImageFromGallery) {
             showAddImageFromGallery();
             return true;
+        } else if (item.getItemId() == R.id.sortAlpha) {
+            adapter.sortAlpha();
         }
+
         return false;
     }
+
 
     /**
      * intent to open gallery
@@ -98,7 +215,9 @@ public class GalleryActivity extends AppCompatActivity {
                 new AddImageDialog().fetchDataForGallery(uri, this, new AddImageDialog.OnCompleteListener() {
                     @Override
                     public void onImageAdded(Item item) {
-                        inflateViewForItem(item);
+                        itemList.add(item);
+                        setUpRecyclerView();
+
                     }
 
                     @Override
@@ -122,8 +241,11 @@ public class GalleryActivity extends AppCompatActivity {
                 .show(this, new AddImageDialog.OnCompleteListener() {
                     @Override
                     public void onImageAdded(Item item) {
+                        itemList.add(item);
+                        b.noItems.setVisibility(View.GONE);
+                        //make orientation default
+                        setUpRecyclerView();
 
-                        inflateViewForItem(item);
                     }
 
                     @Override
@@ -136,33 +258,6 @@ public class GalleryActivity extends AppCompatActivity {
                 });
     }
 
-    /**
-     * inflate and add view to layout
-     *
-     * @param item
-     */
-    private void inflateViewForItem(Item item) {
-        //make orientation default
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
-        //inflate layout
-        ItemCardBinding binding = ItemCardBinding.inflate(getLayoutInflater());
-
-        itemList.add(item);
-
-        //bind data
-        Glide.with(this)
-                .asBitmap()
-                .load(item.url)
-                .into(binding.imageView);
-        b.noItems.setVisibility(View.GONE);
-
-        binding.title.setText(item.label);
-        binding.title.setBackgroundColor(item.color);
-
-        //Add it to the list
-        b.list.addView(binding.getRoot());
-        registerForContextMenu(binding);
-    }
 
     /**
      * override on pause to save data in shared preference
@@ -191,7 +286,9 @@ public class GalleryActivity extends AppCompatActivity {
      */
     void getDataFromSharedPreference() {
         int itemCount = sharedPrefs.getInt(Constants.NUMOFIMG, 0);
-
+        if (itemCount > 0) {
+            b.noItems.setVisibility(View.GONE);
+        }
         // Inflate all items from shared preferences
         for (int i = 0; i < itemCount; i++) {
 
@@ -199,33 +296,44 @@ public class GalleryActivity extends AppCompatActivity {
                     , sharedPrefs.getInt(Constants.COLOR + i, 0)
                     , sharedPrefs.getString(Constants.LABEL + i, ""));
 
-            inflateViewForItem(item);
+            itemList.add(item);
         }
-    }
-
-    public void registerForContextMenu(ItemCardBinding b) {
-        b.imageView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-            @Override
-            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                binding = b;
-                MenuInflater inflater = getMenuInflater();
-                inflater.inflate(R.menu.send_menu, menu);
-            }
-        });
-
+        setUpRecyclerView();
     }
 
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.shareImage) {
-            shareImage();
+            askForPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,WRITE_EXST);
+            return true;
+        } else if (item.getItemId() == R.id.edit) {
+            edit();
+            return true;
         }
         return true;
     }
 
+    private void edit() {
+        Item item = itemList.get(adapter.index);
+        new AddImageDialog().showEditImageDialog(item.url, this, new AddImageDialog.OnCompleteListener() {
+            @Override
+            public void onImageAdded(Item item) {
+            adapter.visibleCardItem.set(adapter.index,item);
+            itemList= adapter.visibleCardItem;
+            adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
+
+    }
+
     private void shareImage() {
-        Bitmap bitmap = getBitmapFromView(binding.getRoot());
+        Bitmap bitmap = adapter.mBitmap;
         String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "palette", "share palette");
         Uri bitmapUri = Uri.parse(bitmapPath);
         //Intent to send image
@@ -235,22 +343,65 @@ public class GalleryActivity extends AppCompatActivity {
         startActivity(Intent.createChooser(intent, "Share"));
     }
 
-    public static Bitmap getBitmapFromView(View view) {
-        //Define a bitmap with the same size as the view
-        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        //Bind a canvas to it
-        Canvas canvas = new Canvas(returnedBitmap);
-        //Get the view's background
-        Drawable bgDrawable = view.getBackground();
-        if (bgDrawable != null)
-            //has background drawable, then draw it on the canvas
-            bgDrawable.draw(canvas);
+
+
+    private void itemTouchHelperCallback() {
+
+        ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+//                int position = viewHolder.getAdapterPosition();
+//                itemList.remove(position);
+//                adapter.notifyItemRemoved(position);
+
+                adapter.visibleCardItem.remove(viewHolder.getAdapterPosition());
+                itemList = adapter.visibleCardItem;
+                //  adapter.cardItem.remove(viewHolder.getAdapterPosition());
+                Toast.makeText(context, "Image Removed", Toast.LENGTH_SHORT).show();
+                if (itemList.isEmpty())
+                    b.noItems.setVisibility(View.VISIBLE);
+                adapter.notifyDataSetChanged();
+
+            }
+        };
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeCallback);
+        itemTouchhelper.attachToRecyclerView(b.list);
+
+
+         dragCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.DOWN | ItemTouchHelper.UP, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+
+                int fromPosition = viewHolder.getAdapterPosition();
+                int toPosition = target.getAdapterPosition();
+
+                Collections.swap(itemList, fromPosition, toPosition);
+                // recyclerView.getAdapter().notifyItemMoved(fromPosition,toPosition);
+                adapter.notifyItemMoved(fromPosition, toPosition);
+
+                return true;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+
+            }
+        };
+
+        itemTouchHelper2 = new ItemTouchHelper(dragCallback);
+        if(MODE==MODE_ENABLE)
+        itemTouchHelper2.attachToRecyclerView(b.list);
         else
-            //does not have background drawable, then draw white background on the canvas
-            canvas.drawColor(Color.WHITE);
-        // draw the view on the canvas
-        view.draw(canvas);
-        //return the bitmap
-        return returnedBitmap;
+            itemTouchHelper2.attachToRecyclerView(null);
     }
+
+
+
+
 }

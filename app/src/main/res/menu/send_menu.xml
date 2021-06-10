@@ -5,4 +5,9 @@
     <item
         android:title="@string/share_image"
         android:id="@+id/shareImage"/>
+
+    <item
+        android:title="Edit"
+        android:id="@+id/edit"/>
+
 </menu>

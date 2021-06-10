@@ -305,10 +305,43 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
         dialog.dismiss();
     }
 
-    interface OnCompleteListener {
-        void onImageAdded(Item item);
 
-        void onError(String error);
+    public void showEditImageDialog(String url,Context context,OnCompleteListener listener) {
+        this.context=context;
+        this.listener=listener;
+
+        if (context instanceof GalleryActivity) {
+            inflater = ((GalleryActivity) context).getLayoutInflater();
+            b = DialogAddImageBinding.inflate(inflater);
+        } else {
+            dialog.dismiss();
+            listener.onError("Cast Exception");
+            return;
+        }
+        b.inputDimensionsRoot.setVisibility(View.GONE);
+        b.progressIndicatorRoot.setVisibility(View.VISIBLE);
+        b.addBtn.setText("UPDATE");
+        dialog = new MaterialAlertDialogBuilder(context, R.style.CustomDialogTheme)
+                .setView(b.getRoot())
+                .show();
+        new ItemHelper().fetchData(url, context, new ItemHelper.OnCompleteListener() {
+            @Override
+            public void onFetched(String redirectUrl, Set<Integer> colors, List<String> labels) {
+                showData(redirectUrl, colors, labels);
+            }
+
+            @Override
+            public void onError(String s) {
+
+            }
+        });
+
     }
+        interface OnCompleteListener {
+            void onImageAdded(Item item);
+
+            void onError(String error);
+        }
 
 }
+
