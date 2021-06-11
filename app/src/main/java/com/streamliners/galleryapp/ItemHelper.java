@@ -59,6 +59,7 @@ public class ItemHelper {
         );
     }
 
+    //Fetch data from url
     void fetchData(String url,Context context,OnCompleteListener listener ){
         this.context = context;
         this.listener = listener;

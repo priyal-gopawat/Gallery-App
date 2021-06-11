@@ -33,11 +33,17 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
     public List<CardViewHolder> holders = new ArrayList<>();
     public int mode=0;
 
+    /**
+     * constructor for item adapter
+     * @param context
+     * @param cardItem
+     */
     public ItemAdapter(Context context, List<Item> cardItem) {
         this.context = context;
         this.cardItem = cardItem;
         visibleCardItem = new ArrayList<>(cardItem);
     }
+
 
     @NonNull
     @Override
@@ -68,7 +74,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
     }
 
 
-
+    /**
+     * Adding search functionality
+     * @param query
+     */
     public void filter(String query) {
 
         if (query.trim().isEmpty()) {
@@ -88,7 +97,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
         notifyDataSetChanged();
     }
 
-
+    /**
+     * sort alphabetically
+     */
     public void sortAlpha(){
         Collections.sort(visibleCardItem, new Comparator<Item>() {
             @Override
@@ -110,6 +121,9 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
            listenerSetter();
         }
 
+        /**
+         * setUp listener according to mode
+         */
          public void listenerSetter(){
              if (mode==0){
                  registerForContextMenu(b);
@@ -119,6 +133,10 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
              }
         }
 
+        /**
+         * register binding for context menu
+         * @param binding
+         */
         public void registerForContextMenu(ItemCardBinding binding) {
             binding.imageView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 @Override
@@ -136,6 +154,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
 
         }
 
+        /**
+         * get bitmap from view
+         * @param view
+         * @return
+         */
         public  Bitmap getBitmapFromView(View view) {
             //Define a bitmap with the same size as the view
             Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
@@ -154,11 +177,6 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
             //return the bitmap
             return returnedBitmap;
         }
-
-
     }
-
-
-
 
 }

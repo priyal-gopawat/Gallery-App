@@ -81,6 +81,13 @@ public class GalleryActivity extends AppCompatActivity {
         floatingActionButton();
     }
 
+
+    /**
+     * request result from storage permission
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -93,6 +100,11 @@ public class GalleryActivity extends AppCompatActivity {
         else Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * ask for storage permission
+     * @param permission
+     * @param requestCode
+     */
     private void askForPermission(String permission, Integer requestCode) {
         if (ContextCompat.checkSelfPermission(GalleryActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
 
@@ -103,6 +115,9 @@ public class GalleryActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * setup floating action btn
+     */
     private void floatingActionButton() {
         b.floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,6 +153,9 @@ public class GalleryActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * setting up recycler view
+     */
     private void setUpRecyclerView() {
 
         adapter = new ItemAdapter(this, itemList);
@@ -314,6 +332,9 @@ public class GalleryActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * show edit image dialog
+     */
     private void edit() {
         Item item = itemList.get(adapter.index);
         new AddImageDialog().showEditImageDialog(item.url, this, new AddImageDialog.OnCompleteListener() {
@@ -332,6 +353,9 @@ public class GalleryActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * sharing imageCard
+     */
     private void shareImage() {
         Bitmap bitmap = adapter.mBitmap;
         String bitmapPath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "palette", "share palette");
@@ -344,7 +368,9 @@ public class GalleryActivity extends AppCompatActivity {
     }
 
 
-
+    /**
+     * swipe and dragDrop callBack
+     */
     private void itemTouchHelperCallback() {
 
         ItemTouchHelper.SimpleCallback swipeCallback = new ItemTouchHelper.SimpleCallback(0,ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {

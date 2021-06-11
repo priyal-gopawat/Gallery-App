@@ -305,7 +305,12 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
         dialog.dismiss();
     }
 
-
+    /**
+     * setup dialog for editting image
+     * @param url
+     * @param context
+     * @param listener
+     */
     public void showEditImageDialog(String url,Context context,OnCompleteListener listener) {
         this.context=context;
         this.listener=listener;
