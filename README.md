@@ -14,7 +14,20 @@ Features Of Application :
   
 - add image from gallery
 
-- share image card 
+- share image card
+
+
+-Implement the Gallery app using RecyclerView
+
+-Add drag & drop functionality
+
+-Add Sort alphabetically action to the action bar
+
+-Add Search functionality
+
+-Add Swipe to remove functionality
+  
+-Adding storage permission 
 
 Application Previews :
 
