@@ -14,11 +14,24 @@ Features Of Application :
   
 - add image from gallery
 
-- share image card 
+- share image card
+
+
+-Implement the Gallery app using RecyclerView
+
+-Add drag & drop functionality
+
+-Add Sort alphabetically action to the action bar
+
+-Add Search functionality
+
+-Add Swipe to remove functionality
+  
+-Adding storage permission 
 
 Application Previews :
 
- Checkout application video from [here](https://drive.google.com/file/d/1P5wSOTbp9MeyWcrbXR7TRnx77IPo4SOh/view?usp=sharing)
+ Checkout application video from [here](https://drive.google.com/file/d/1DALXTARBSvMvcCfxzz2T0ZRdvwiDUBia/view?usp=sharing)
  
  ![gallery.jpeg](https://github.com/priyal-gopawat/Storage/blob/main/Gallery%20App/gallery.jpeg)
  
@@ -26,4 +39,5 @@ Application Previews :
  
  ![share1.png](https://github.com/priyal-gopawat/Storage/blob/main/Gallery%20App/share1.png)
 
-Download apk from [here](https://github.com/priyal-gopawat/Gallery-App/releases/download/1.0/app-debug.apk)
+Download apk from [here](https://github.com/priyal-gopawat/Gallery-App/releases/download/1.1/app-debug.apk)
+
