@@ -27,7 +27,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
 
     private Context context;
     public List<Item> cardItem, visibleCardItem;
-    ItemCardBinding b;
+    public  ItemCardBinding b;
     public int index;
     public Bitmap mBitmap;
     public List<CardViewHolder> holders = new ArrayList<>();
