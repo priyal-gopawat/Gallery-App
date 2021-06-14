@@ -33,6 +33,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -93,7 +94,7 @@ public class GalleryActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_GRANTED) {
-            if (requestCode == 3 || requestCode == 4) {
+            if (requestCode == 3) {
                 shareImage();
             }
         }
@@ -125,7 +126,7 @@ public class GalleryActivity extends AppCompatActivity {
             if(MODE==MODE_ENABLE){
                 MODE=MODE_DISABLE;
                 adapter.mode = MODE_DISABLE;
-                b.floatingActionButton.setImageResource(R.drawable.ic_vertical2);
+                b.floatingActionButton.setImageResource(R.drawable.ic_vertical);
                 List<ItemAdapter.CardViewHolder> holders = adapter.holders;
 
                 for(int i=0;i<holders.size();i++){
@@ -138,7 +139,7 @@ public class GalleryActivity extends AppCompatActivity {
             else {
                 MODE=MODE_ENABLE;
                 adapter.mode = MODE_ENABLE;
-                b.floatingActionButton.setImageResource(R.drawable.ic_drag_drop);
+                b.floatingActionButton.setImageResource(R.drawable.ic_drag);
                 List<ItemAdapter.CardViewHolder> holders = adapter.holders;
 
                 for(int i=0;i<holders.size();i++){
@@ -178,6 +179,7 @@ public class GalleryActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.gallery, menu);
 
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -337,7 +339,7 @@ public class GalleryActivity extends AppCompatActivity {
      */
     private void edit() {
         Item item = itemList.get(adapter.index);
-        new AddImageDialog().showEditImageDialog(item.url, this, new AddImageDialog.OnCompleteListener() {
+        new AddImageDialog().showEditImageDialog(item, this, new AddImageDialog.OnCompleteListener() {
             @Override
             public void onImageAdded(Item item) {
             adapter.visibleCardItem.set(adapter.index,item);
@@ -387,8 +389,9 @@ public class GalleryActivity extends AppCompatActivity {
 
                 adapter.visibleCardItem.remove(viewHolder.getAdapterPosition());
                 itemList = adapter.visibleCardItem;
-                //  adapter.cardItem.remove(viewHolder.getAdapterPosition());
+
                 Toast.makeText(context, "Image Removed", Toast.LENGTH_SHORT).show();
+
                 if (itemList.isEmpty())
                     b.noItems.setVisibility(View.VISIBLE);
                 adapter.notifyDataSetChanged();
@@ -408,7 +411,7 @@ public class GalleryActivity extends AppCompatActivity {
                 int toPosition = target.getAdapterPosition();
 
                 Collections.swap(itemList, fromPosition, toPosition);
-                // recyclerView.getAdapter().notifyItemMoved(fromPosition,toPosition);
+
                 adapter.notifyItemMoved(fromPosition, toPosition);
 
                 return true;
@@ -426,8 +429,6 @@ public class GalleryActivity extends AppCompatActivity {
         else
             itemTouchHelper2.attachToRecyclerView(null);
     }
-
-
 
 
 }

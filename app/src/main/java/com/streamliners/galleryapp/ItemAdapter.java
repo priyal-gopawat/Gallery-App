@@ -28,9 +28,12 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
     private Context context;
     public List<Item> cardItem, visibleCardItem;
     public  ItemCardBinding b;
+
     public int index;
     public Bitmap mBitmap;
+
     public List<CardViewHolder> holders = new ArrayList<>();
+
     public int mode=0;
 
     /**
@@ -48,7 +51,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
     @NonNull
     @Override
     public CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemCardBinding b = ItemCardBinding.inflate(LayoutInflater.from(context), parent, false);
+         b = ItemCardBinding.inflate(LayoutInflater.from(context), parent, false);
 
         return new CardViewHolder(b);
     }
@@ -65,6 +68,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
         holder.b.title.setText(visibleCardItem.get(position).label);
         holder.b.title.setBackgroundColor(visibleCardItem.get(position).color);
 
+        //for saving holders
         holders.add(holder);
     }
 
@@ -81,6 +85,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
     public void filter(String query) {
 
         if (query.trim().isEmpty()) {
+            ((GalleryActivity) context).findViewById(R.id.noItemsFound).setVisibility(View.GONE);
             visibleCardItem = new ArrayList<>(cardItem);
             notifyDataSetChanged();
             return;
@@ -94,6 +99,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
                 }
             }
 
+            if(visibleCardItem.isEmpty()) {
+                ((GalleryActivity) context).findViewById(R.id.noItemsFound).setVisibility(View.VISIBLE);
+            }
+                else{
+                    ((GalleryActivity) context).findViewById(R.id.noItemsFound).setVisibility(View.GONE);
+                }
+
         notifyDataSetChanged();
     }
 
@@ -104,6 +116,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
         Collections.sort(visibleCardItem, new Comparator<Item>() {
             @Override
             public int compare(Item o1, Item o2) {
+
                 return o1.label.compareTo(o2.label);
             }
         });
@@ -143,11 +156,12 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.CardViewHolder
                 public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 
                     menu.setHeaderTitle("Choose your option");
+
                     MenuInflater inflater = ((GalleryActivity) context).getMenuInflater();
                     inflater.inflate(R.menu.send_menu, menu);
                     mBitmap = getBitmapFromView(binding.getRoot());
 
-                    index = visibleCardItem.indexOf(visibleCardItem.get(getAdapterPosition()));
+                    index = getAdapterPosition();
 
                 }
             });

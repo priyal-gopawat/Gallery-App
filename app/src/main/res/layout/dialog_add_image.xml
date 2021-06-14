@@ -167,10 +167,6 @@
             app:singleSelection="true">
 
 
-            <include layout="@layout/chip_color" />
-
-            <include layout="@layout/chip_color" />
-
         </com.google.android.material.chip.ChipGroup>
 
 

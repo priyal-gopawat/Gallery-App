@@ -34,7 +34,8 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
     private boolean isCustomLabel;
     private AlertDialog dialog;
     String redirectUrl;
-    int flag = 0;
+    int flag =0;
+   public Item item;
 
     /**
      * showing dialogBox
@@ -161,7 +162,7 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
     void fetchDataForGallery(String url,Context context,OnCompleteListener listener){
         this.listener = listener;
         this.context = context;
-        flag=1;
+
         if (context instanceof GalleryActivity) {
             inflater = ((GalleryActivity) context).getLayoutInflater();
             b = DialogAddImageBinding.inflate(inflater);
@@ -188,15 +189,14 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
     private void showData(String url, Set<Integer> colors, List<String> labels) {
         this.redirectUrl = url;
 
-        if(flag==1){
             b.inputDimensionsRoot.setVisibility(View.GONE);
 
-        }
         //loads image from glide cache
         Glide.with(context)
                 .asBitmap()
                 .load(redirectUrl)
                 .into(b.imageView);
+
         inflateColorChips(colors);
         inflateLabelChips(labels);
         handleCustomLabelInput();
@@ -274,6 +274,9 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
             ChipLabelBinding binding = ChipLabelBinding.inflate(inflater);
             binding.getRoot().setText(label);
             b.labelChips.addView(binding.getRoot());
+
+            if(flag==1 && label.equals(item.label))
+                binding.getRoot().setChecked(true);
         }
     }
 
@@ -288,6 +291,8 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
             ChipColorBinding binding = ChipColorBinding.inflate(inflater);
             binding.getRoot().setChipBackgroundColor(ColorStateList.valueOf(color));
             b.colorChips.addView(binding.getRoot());
+            if(flag==1 && color==item.color)
+            binding.getRoot().setChecked(true);
         }
     }
 
@@ -307,13 +312,16 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
 
     /**
      * setup dialog for editting image
-     * @param url
+     * @param item
      * @param context
      * @param listener
      */
-    public void showEditImageDialog(String url,Context context,OnCompleteListener listener) {
+    public void showEditImageDialog(Item item,Context context,OnCompleteListener listener) {
         this.context=context;
         this.listener=listener;
+        this.item=item;
+
+        flag=1;
 
         if (context instanceof GalleryActivity) {
             inflater = ((GalleryActivity) context).getLayoutInflater();
@@ -329,7 +337,7 @@ public class AddImageDialog implements ItemHelper.OnCompleteListener {
         dialog = new MaterialAlertDialogBuilder(context, R.style.CustomDialogTheme)
                 .setView(b.getRoot())
                 .show();
-        new ItemHelper().fetchData(url, context, new ItemHelper.OnCompleteListener() {
+        new ItemHelper().fetchData(item.url, context, new ItemHelper.OnCompleteListener() {
             @Override
             public void onFetched(String redirectUrl, Set<Integer> colors, List<String> labels) {
                 showData(redirectUrl, colors, labels);
