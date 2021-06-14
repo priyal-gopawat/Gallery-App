@@ -39,5 +39,5 @@ Application Previews :
  
  ![share1.png](https://github.com/priyal-gopawat/Storage/blob/main/Gallery%20App/share1.png)
 
-Download apk from [here](https://github.com/priyal-gopawat/Gallery-App/releases/download/1.1/app-debug.apk)
+Download apk from [here](https://github.com/priyal-gopawat/Gallery-App/releases/download/1.1/app-debug.4.apk)
 
